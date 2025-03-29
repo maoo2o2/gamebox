@@ -140,7 +140,6 @@ const quizData = [
     explanation: "三角州は、川が海に注ぐ場所で水の流れが弱まり、運ばれてきた土や石が堆積してできます。"
   }
 ];
-
 let currentQuestion = 0;
 let score = 0;
 let mistakes = [];
@@ -153,6 +152,20 @@ const mistakesContainer = document.getElementById('mistakes');
 const correctSound = new Audio('sound/Quiz-Correct_Answer01-1.mp3');
 const wrongSound = new Audio('sound/Quiz-Wrong_Buzzer02-1.mp3');
 const resultSound = new Audio('sound/Quiz-Results01-1.mp3');
+
+function showConfetti() {
+  const confetti = document.createElement('div');
+  confetti.className = 'confetti';
+  for (let i = 0; i < 30; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+    confetti.appendChild(piece);
+  }
+  document.body.appendChild(confetti);
+  setTimeout(() => confetti.remove(), 1500);
+}
 
 function showQuestion() {
   const q = quizData[currentQuestion];
@@ -180,6 +193,7 @@ function checkAnswer(selected) {
   if (selected === q.answer) {
     correctSound.play();
     score++;
+    showConfetti();
   } else {
     wrongSound.play();
     mistakes.push({ q: q.question, correct: q.options[q.answer], explanation: q.explanation });
@@ -192,7 +206,7 @@ function checkAnswer(selected) {
     } else {
       showResult();
     }
-  }, 1200);
+  }, 1500);
 }
 
 function showResult() {
@@ -216,6 +230,4 @@ function restartQuiz() {
   showQuestion();
 }
 
-// 初回表示
 window.onload = showQuestion;
-
