@@ -1,3 +1,4 @@
+/* 全体の基本スタイル */
 body {
   font-family: 'Arial', sans-serif;
   background: linear-gradient(to bottom, #cceeff, #ffffff);
@@ -18,9 +19,10 @@ body {
 h1 {
   text-align: center;
   color: #0088cc;
-  font-size: 1.8rem;
+  font-size: 2rem;
 }
 
+/* クイズの質問部分 */
 .question {
   margin-bottom: 20px;
   padding: 15px;
@@ -34,12 +36,13 @@ h1 {
   box-shadow: 0 0 10px rgba(0,136,204,0.2);
 }
 
+/* 選択肢ボタン */
 .options button {
   display: block;
   width: 100%;
-  margin: 8px 0;
-  padding: 12px;
-  font-size: 1rem;
+  margin: 10px 0;
+  padding: 14px;
+  font-size: 1.1rem;
   border: none;
   border-radius: 8px;
   background-color: #e0f7fa;
@@ -51,6 +54,7 @@ h1 {
   background-color: #b2ebf2;
 }
 
+/* 正解と不正解のアニメーション */
 button.correct {
   background-color: #a5d6a7 !important;
   animation: pop 0.3s ease-in-out;
@@ -73,8 +77,10 @@ button.wrong {
   75% { transform: translateX(5px); }
 }
 
+/* 結果画面 */
 #result {
   text-align: center;
+  margin-top: 30px;
 }
 
 .hidden {
@@ -84,13 +90,15 @@ button.wrong {
 #mistakes {
   text-align: left;
   margin-top: 20px;
+  font-size: 1rem;
 }
 
 #mistakes p {
   margin: 10px 0;
+  line-height: 1.6;
 }
 
-/* 🎉 Confetti エフェクト */
+/* 🎉 正解エフェクト：紙吹雪 */
 .confetti {
   position: fixed;
   top: 0;
@@ -115,23 +123,33 @@ button.wrong {
   100% { transform: translateY(100vh); opacity: 0; }
 }
 
-/* 📱 モバイル対応 */
+/* 📱 スマホ対応 */
 @media screen and (max-width: 600px) {
-  .container {
-    padding: 15px;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  .options button {
-    font-size: 0.9rem;
+  body {
     padding: 10px;
   }
 
+  .container {
+    padding: 15px;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
   .question h2 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+  }
+
+  .options button {
+    font-size: 1rem;
+    padding: 12px;
+  }
+
+  #mistakes {
+    font-size: 0.95rem;
   }
 }
 
