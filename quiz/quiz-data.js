@@ -1,3 +1,4 @@
+console.log("quiz-data.js 読み込みOK！");
 const quizData = [
   {
     question: "上流・中流・下流の特徴について、正しい組み合わせを選びなさい。",

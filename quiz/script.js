@@ -1,5 +1,3 @@
-console.log("読み込まれた quizData 件数:", quizData?.length);
-// 効果音ファイル
 const correctSound = new Audio('sound/Quiz-Correct_Answer01-1.mp3');
 const wrongSound = new Audio('sound/Quiz-Wrong_Buzzer02-1.mp3');
 const resultSound = new Audio('sound/Quiz-Results01-1.mp3');
@@ -8,13 +6,11 @@ let currentQuestion = 0;
 let score = 0;
 let mistakes = [];
 
-// DOM取得
 const quizContainer = document.getElementById('quiz');
 const resultContainer = document.getElementById('result');
 const scoreDisplay = document.getElementById('score');
 const mistakesContainer = document.getElementById('mistakes');
 
-// 🎉 正解時の紙吹雪エフェクト
 function showConfetti() {
   const confetti = document.createElement('div');
   confetti.className = 'confetti';
@@ -29,7 +25,6 @@ function showConfetti() {
   setTimeout(() => confetti.remove(), 1500);
 }
 
-// クイズ出題
 function showQuestion() {
   const q = quizData[currentQuestion];
   quizContainer.innerHTML = `
@@ -43,7 +38,6 @@ function showQuestion() {
   `;
 }
 
-// 回答チェック
 function checkAnswer(selected) {
   const q = quizData[currentQuestion];
   const buttons = document.querySelectorAll('.options button');
@@ -77,7 +71,6 @@ function checkAnswer(selected) {
   }, 1500);
 }
 
-// 結果表示
 function showResult() {
   resultSound.play();
   quizContainer.classList.add('hidden');
@@ -93,7 +86,6 @@ function showResult() {
   }
 }
 
-// リトライ
 function restartQuiz() {
   currentQuestion = 0;
   score = 0;
@@ -103,6 +95,5 @@ function restartQuiz() {
   showQuestion();
 }
 
-// ゲーム開始
 window.onload = showQuestion;
 
