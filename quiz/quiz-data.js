@@ -1,6 +1,3 @@
-
-console.log("クイズデータ読み込み成功", quizData.length);
-
 const quizData = [
   {
     question: "上流・中流・下流の特徴について、正しい組み合わせを選びなさい。",
