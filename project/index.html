@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>選んで学べるクイズ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>選んで学べるクイズ</h1>
+
+    <label for="subjectSelector">教科を選んでね：</label>
+    <select id="subjectSelector">
+      <option value="">-- 選択 --</option>
+      <option value="理科">理科</option>
+      <option value="社会">社会</option>
+    </select>
+
+    <label for="topicSelector">単元を選んでね：</label>
+    <select id="topicSelector" disabled>
+      <option value="">-- まず教科を選んでね --</option>
+    </select>
+
+    <button id="startBtn" onclick="loadSelectedQuiz()" disabled>クイズスタート！</button>
+
+    <div id="quizArea" class="hidden">
+      <div id="quiz"></div>
+      <div id="result" class="hidden">
+        <h2>結果発表！</h2>
+        <p id="score"></p>
+        <div id="mistakes"></div>
+        <button onclick="restartQuiz()">リトライ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- メインスクリプト -->
+  <script src="quiz/script.js"></script>
+</body>
+</html>
+
