@@ -1,5 +1,3 @@
-
-
 let quizData = [];
 let currentQuestion = 0;
 let score = 0;
@@ -11,7 +9,6 @@ const resultSound = new Audio('quiz/sound/Quiz-Results01-1.mp3');
 
 const subjectSelector = document.getElementById("subjectSelector");
 const topicSelector = document.getElementById("topicSelector");
-
 const startBtn = document.getElementById("startBtn");
 const quizArea = document.getElementById("quizArea");
 const quizContainer = document.getElementById("quiz");
@@ -19,13 +16,11 @@ const resultContainer = document.getElementById("result");
 const scoreDisplay = document.getElementById("score");
 const mistakesContainer = document.getElementById("mistakes");
 
-// 単元リスト
 const topics = {
-  "理科": ["太陽", "water"],
-  "社会": ["地形", "歴史"]
+  "理科": ["water"],
+  "社会": []
 };
 
-// 教科が変わったら単元を更新
 subjectSelector.addEventListener("change", () => {
   const subject = subjectSelector.value;
   topicSelector.innerHTML = "<option value=''>-- 単元を選んでね --</option>";
@@ -41,16 +36,13 @@ subjectSelector.addEventListener("change", () => {
   } else {
     topicSelector.disabled = true;
   }
-
   startBtn.disabled = true;
 });
 
-// 単元が選ばれたらスタート可能に
 topicSelector.addEventListener("change", () => {
   startBtn.disabled = !topicSelector.value;
 });
 
-// クイズCSV読み込み
 function loadSelectedQuiz() {
   const subject = subjectSelector.value;
   const topic = topicSelector.value;
@@ -173,3 +165,4 @@ function restartQuiz() {
   quizContainer.classList.remove('hidden');
   showQuestion();
 }
+
