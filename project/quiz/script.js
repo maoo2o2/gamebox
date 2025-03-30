@@ -70,13 +70,22 @@ function parseCSV(csv) {
   const result = [];
 
   for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(",");
-    result.push({
-      question: values[0],
-      options: [values[1], values[2], values[3], values[4]],
-      answer: parseInt(values[5]),
-      explanation: values[6]
-    });
+    const line = lines[i];
+    const regex = /("([^"]*)"|[^,]+)(?=,|$)/g;
+    const values = [];
+    let match;
+    while ((match = regex.exec(line)) !== null) {
+      values.push(match[2] !== undefined ? match[2] : match[1]);
+    }
+
+    if (values.length >= 7) {
+      result.push({
+        question: values[0],
+        options: [values[1], values[2], values[3], values[4]],
+        answer: parseInt(values[5]),
+        explanation: values[6]
+      });
+    }
   }
 
   return result;
