@@ -49,9 +49,13 @@ function loadSelectedQuiz() {
   const path = `quiz/quizzes/${subject}/${topic}.csv`;
 
   fetch(path)
-    .then(res => res.text())
+    .then(res => {
+      if (!res.ok) throw new Error("ファイルが見つかりません: " + path);
+      return res.text();
+    })
     .then(csv => {
       quizData = parseCSV(csv);
+      if (quizData.length === 0) throw new Error("CSVデータが空です");
       startBtn.disabled = true;
       quizArea.classList.remove("hidden");
       resultContainer.classList.add("hidden");
@@ -62,6 +66,7 @@ function loadSelectedQuiz() {
     })
     .catch(err => {
       alert("CSVファイルが読み込めませんでした：" + err);
+      console.error("読み込みエラー:", err);
     });
 }
 
@@ -85,6 +90,8 @@ function parseCSV(csv) {
         answer: parseInt(values[5]),
         explanation: values[6]
       });
+    } else {
+      console.warn("無効な行（スキップされました）:", values);
     }
   }
 
@@ -107,6 +114,10 @@ function showConfetti() {
 
 function showQuestion() {
   const q = quizData[currentQuestion];
+  if (!q || !q.question || !q.options) {
+    alert("クイズデータの読み込みに失敗しました。内容をご確認ください。");
+    return;
+  }
   quizContainer.innerHTML = `
     <div class="question">
       <h2>問題 ${currentQuestion + 1}</h2>
