@@ -1,3 +1,4 @@
+console.log("読み込まれた quizData 件数:", quizData?.length);
 // 効果音ファイル
 const correctSound = new Audio('sound/Quiz-Correct_Answer01-1.mp3');
 const wrongSound = new Audio('sound/Quiz-Wrong_Buzzer02-1.mp3');
