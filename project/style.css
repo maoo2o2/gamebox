@@ -51,29 +51,29 @@ button:disabled {
 }
 
 .options button {
-  display: block;
-  width: 100%;
-  margin: 10px 0;
-  padding: 14px;
-  font-size: 1.1rem;
+  background-color: #87ceeb; /* スカイブルー */
+  color: white;
+  font-weight: bold;
   border: none;
-  border-radius: 8px;
-  background-color: #e0f7fa;
-  cursor: pointer;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  width: 100%;
+  transition: background-color 0.3s ease;
 }
 
 .options button:hover {
-  background-color: #b2ebf2;
+  background-color: #00bfff; /* ディープスカイブルー */
 }
 
-button.correct {
-  background-color: #a5d6a7 !important;
-  animation: pop 0.3s ease-in-out;
+.options button.correct {
+  background-color: #4caf50; /* 成功グリーン */
+  color: white;
 }
 
-button.wrong {
-  background-color: #ef9a9a !important;
-  animation: shake 0.3s ease-in-out;
+.options button.wrong {
+  background-color: #f44336; /* エラーレッド */
+  color: white;
 }
 
 @keyframes pop {
