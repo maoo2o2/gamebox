@@ -1,5 +1,17 @@
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
+// スマホボタン表示・非表示切替
+const touchButtons = document.getElementById("touchButtons");
+if (!isMobile && touchButtons) {
+  touchButtons.style.display = "none";
+}
+
+// PC操作説明の表示
+const pcControls = document.getElementById("pcControls");
+if (!isMobile && pcControls) {
+  pcControls.style.display = "block";
+}
+
 if (!isMobile) {
   document.getElementById("mobileControls").style.display = "none";
 }
