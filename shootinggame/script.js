@@ -1,3 +1,8 @@
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+if (!isMobile) {
+  document.getElementById("mobileControls").style.display = "none";
+}
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
