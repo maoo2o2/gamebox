@@ -22,13 +22,13 @@ let enemySpeedBase = 2;
 let spawning = true;
 
 const playerImg = new Image();
-playerImg.src = "https://i.imgur.com/YVzt5gl.png";
+playerImg.src = "ロケット.png";
 
 const enemyImgs = [
-  "https://i.imgur.com/TRN6o31.png",
-  "https://i.imgur.com/RQm6yTc.png",
-  "https://i.imgur.com/IC9Z5ur.png",
-  "https://i.imgur.com/ObKkD0E.png"
+                   "omoro_alien_01.png",
+                    "omoro_alien_04.png",
+                    "omoro_alien_05.png",
+                    "omoro_alien_07.png"
 ].map(src => {
   const img = new Image();
   img.src = src;
