@@ -1,4 +1,3 @@
-
 if (!isMobile) {
   document.getElementById("mobileControls").style.display = "none";
 }
@@ -62,14 +61,6 @@ function fireBullet() {
   seShoot.currentTime = 0;
   seShoot.play();
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  const mobileControls = document.getElementById("mobileControls");
-  if (!isMobile && mobileControls) {
-    mobileControls.style.display = "none";
-  }
-});
 
 window.addEventListener("keydown", e => {
   if (isGameOver) return;
