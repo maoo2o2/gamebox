@@ -32,7 +32,7 @@ const enemyImgs = [
                 
                     "./omoro_alien_04.png",
                     "./omoro_alien_05.png",
-                    "./omoro_alien_07.png"
+                    "./omoro_alien_07.png",
                    "./omoro_alien_01.png",
 ].map(src => {
   const img = new Image();
