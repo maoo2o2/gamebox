@@ -4,15 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>予習シリーズ理科クイズ</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1>選んで学べるクイズ</h1>
-
-
+    
+    <!-- 単元選択用のセレクトボックスを追加 -->
     <label for="topicSelector">単元を選んでね：</label>
-
+    <select id="topicSelector"></select>
+    
     <button id="startBtn" onclick="loadSelectedQuiz()" disabled>クイズスタート！</button>
 
     <div id="quizArea" class="hidden">

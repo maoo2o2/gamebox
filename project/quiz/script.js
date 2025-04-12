@@ -3,11 +3,12 @@ let currentQuestion = 0;
 let score = 0;
 let mistakes = [];
 
+// サウンド関連
 const correctSound = new Audio('quiz/sound/Quiz-Correct_Answer01-1.mp3');
 const wrongSound = new Audio('quiz/sound/Quiz-Wrong_Buzzer02-1.mp3');
 const resultSound = new Audio('quiz/sound/Quiz-Results01-1.mp3');
 
-const subjectSelector = document.getElementById("subjectSelector");
+// 各要素の取得
 const topicSelector = document.getElementById("topicSelector");
 const startBtn = document.getElementById("startBtn");
 const quizArea = document.getElementById("quizArea");
@@ -16,35 +17,66 @@ const resultContainer = document.getElementById("result");
 const scoreDisplay = document.getElementById("score");
 const mistakesContainer = document.getElementById("mistakes");
 
-const topics = {
-  "理科": ["6春の生物","7太陽","8水のすがた"],
-  
-};
+// 「理科」クイズ用全単元一覧（全20項目）
+// ※ファイル名としても用いるので、CSVファイル名と一致するように注意してください。
+const topics = [
+  "1回　磁石",
+  "2回　昆虫",
+  "3回　流れる水のはたらき",
+  "4回　季節と天気",
+  "5回　総合（第1回～第4回の復習）",
+  "6回　春の生物",
+  "7回　太陽",
+  "8回　水のすがた",
+  "9回　光",
+  "10回　総合（第6回～第9回の復習）",
+  "11回　植物の成長",
+  "12回　植物のつくりとはたらき",
+  "13回　身のまわりの空気と水",
+  "14回　金属",
+  "15回　総合（第11回～第14回の復習）",
+  "16回　夏の生物",
+  "17回　星座をつくる星",
+  "18回　星座の動き",
+  "19回　動物",
+  "20回　総合（第16回～第19回の復習）"
+];
 
-subjectSelector.addEventListener("change", () => {
-  const subject = subjectSelector.value;
+// 単元セレクターに各 option を追加（CSV存在チェック付き）
+function populateTopicSelector() {
   topicSelector.innerHTML = "<option value=''>-- 単元を選んでね --</option>";
+  topics.forEach(topic => {
+    let option = document.createElement("option");
+    option.value = topic;
+    option.textContent = topic;
+    // CSVファイルの存在チェック (理科の場合)
+    let csvPath = `quiz/quizzes/理科/${topic}.csv`;
+    // HEADリクエストで存在確認
+    fetch(csvPath, { method: 'HEAD' })
+      .then(res => {
+        if (!res.ok) {
+          // 存在しない場合は選択不可にし、表示に注釈を追加
+          option.disabled = true;
+          option.textContent += " (CSV未設定)";
+        }
+      })
+      .catch(err => {
+        option.disabled = true;
+        option.textContent += " (CSV未設定)";
+      });
+    topicSelector.appendChild(option);
+  });
+}
 
-  if (topics[subject]) {
-    topics[subject].forEach(topic => {
-      const option = document.createElement("option");
-      option.value = topic;
-      option.textContent = topic;
-      topicSelector.appendChild(option);
-    });
-    topicSelector.disabled = false;
-  } else {
-    topicSelector.disabled = true;
-  }
-  startBtn.disabled = true;
-});
-
+// 単元選択が変わったら、選択状態の option が有効かチェックし、開始ボタンの有効・無効を更新
 topicSelector.addEventListener("change", () => {
-  startBtn.disabled = !topicSelector.value;
+  let selectedOption = topicSelector.options[topicSelector.selectedIndex];
+  startBtn.disabled = (selectedOption.value === "" || selectedOption.disabled);
 });
 
+// クイズ開始処理（CSV読み込み→パース→クイズ表示）
 function loadSelectedQuiz() {
-  const subject = subjectSelector.value;
+  const subject = "理科";  // subjectは固定
   const topic = topicSelector.value;
   const path = `quiz/quizzes/${subject}/${topic}.csv`;
 
@@ -70,10 +102,12 @@ function loadSelectedQuiz() {
     });
 }
 
+// CSVをパースする処理
 function parseCSV(csv) {
   const lines = csv.trim().split("\n");
   const result = [];
 
+  // ヘッダー行を除いて読み込む
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i];
     const regex = /("([^"]*)"|[^,]+)(?=,|$)/g;
@@ -94,10 +128,10 @@ function parseCSV(csv) {
       console.warn("無効な行（スキップされました）:", values);
     }
   }
-
   return result;
 }
 
+// 正解時のコンフェッティ演出（ちょっとしたお祝い！）
 function showConfetti() {
   const confetti = document.createElement('div');
   confetti.className = 'confetti';
@@ -112,6 +146,7 @@ function showConfetti() {
   setTimeout(() => confetti.remove(), 1500);
 }
 
+// 問題を表示
 function showQuestion() {
   const q = quizData[currentQuestion];
   if (!q || !q.question || !q.options) {
@@ -129,6 +164,7 @@ function showQuestion() {
   `;
 }
 
+// 回答チェック
 function checkAnswer(selected) {
   const q = quizData[currentQuestion];
   const buttons = document.querySelectorAll('.options button');
@@ -142,7 +178,7 @@ function checkAnswer(selected) {
   if (selected === q.answer) {
     correctSound.play();
     score++;
-    showConfetti();
+    showConfetti();  // 正解はお祝いしちゃいましょう！
   } else {
     wrongSound.play();
     mistakes.push({
@@ -162,6 +198,7 @@ function checkAnswer(selected) {
   }, 1500);
 }
 
+// 結果表示
 function showResult() {
   resultSound.play();
   quizContainer.classList.add('hidden');
@@ -177,6 +214,7 @@ function showResult() {
   }
 }
 
+// クイズのリトライ処理
 function restartQuiz() {
   currentQuestion = 0;
   score = 0;
@@ -185,4 +223,7 @@ function restartQuiz() {
   quizContainer.classList.remove('hidden');
   showQuestion();
 }
+
+// DOMロード後に単元セレクターを初期化（準備万端！）
+document.addEventListener("DOMContentLoaded", populateTopicSelector);
 
