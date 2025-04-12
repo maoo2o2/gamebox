@@ -17,8 +17,8 @@ const scoreDisplay = document.getElementById("score");
 const mistakesContainer = document.getElementById("mistakes");
 
 const topics = {
-  "理科": ["水の働き","上8回水のすがた"],
-  "社会": []
+  "理科": ["6春の生物","7太陽","8水のすがた"],
+  
 };
 
 subjectSelector.addEventListener("change", () => {
