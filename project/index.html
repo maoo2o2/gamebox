@@ -3,24 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>選んで学べるクイズ</title>
+  <title>予習シリーズ理科クイズ</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <h1>選んで学べるクイズ</h1>
 
-    <label for="subjectSelector">教科を選んでね：</label>
-    <select id="subjectSelector">
-      <option value="">-- 選択 --</option>
-      <option value="理科">理科</option>
-      <option value="社会">社会</option>
-    </select>
 
     <label for="topicSelector">単元を選んでね：</label>
-    <select id="topicSelector" disabled>
-      <option value="">-- まず教科を選んでね --</option>
-    </select>
 
     <button id="startBtn" onclick="loadSelectedQuiz()" disabled>クイズスタート！</button>
 
