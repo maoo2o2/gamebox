@@ -17,7 +17,7 @@ const scoreDisplay = document.getElementById("score");
 const mistakesContainer = document.getElementById("mistakes");
 
 const topics = {
-  "理科": ["water"],
+  "理科": ["水の働き","上8回水のすがた"],
   "社会": []
 };
 
