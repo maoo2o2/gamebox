@@ -9,13 +9,9 @@
 <body>
   <div class="container">
     <h1>選んで学べるクイズ</h1>
-    
-    <!-- 単元選択用のセレクトボックスを追加 -->
     <label for="topicSelector">単元を選んでね：</label>
     <select id="topicSelector"></select>
-    
     <button id="startBtn" onclick="loadSelectedQuiz()" disabled>クイズスタート！</button>
-
     <div id="quizArea" class="hidden">
       <div id="quiz"></div>
       <div id="result" class="hidden">
@@ -26,9 +22,6 @@
       </div>
     </div>
   </div>
-
-  <!-- メインスクリプト -->
   <script src="quiz/script.js"></script>
 </body>
 </html>
-
