@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>社会クイズ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>社会クイズ</h1>
+    <label for="topicSelector">単元を選んでね：</label>
+    <select id="topicSelector"></select>
+    <button id="startBtn" onclick="loadSelectedQuiz()" disabled>クイズスタート！</button>
+    <div id="quizArea" class="hidden">
+      <div id="quiz"></div>
+      <div id="result" class="hidden">
+        <h2>結果発表！</h2>
+        <p id="score"></p>
+        <div id="mistakes"></div>
+        <button onclick="restartQuiz()">リトライ</button>
+      </div>
+    </div>
+  </div>
+  <script>var QUIZ_SUBJECT = '社会';</script>
+  <script src="script.js"></script>
+</body>
+</html>
