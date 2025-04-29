@@ -127,18 +127,27 @@ function showConfetti() {
 // 問題表示
 function showQuestion() {
   const q = quizData[currentQuestion];
+  // 画像があれば表示、なければ空文字
   const imgHtml = q.image
     ? `<img src="quiz/quizzes/${SUBJECT}/images/${q.image}" alt="問題画像" class="question-image">`
-    : "";
+    : '';
+
+  // 選択肢ボタンのHTMLをあらかじめ生成
+  const optionsHtml = q.options
+    .map((opt, i) => `<button onclick="checkAnswer(${i})">${opt}</button>`)
+    .join('');
+
+  // テンプレートリテラルで組み立て
   quizContainer.innerHTML = `
     <div class="question">
-      <h2>問題 ${currentQuestion+1}</h2>
+      <h2>問題 ${currentQuestion + 1}</h2>
       ${imgHtml}
       <p>${q.question}</p>
       <div class="options">
-        ${q.options.map((opt, i) => `<button onclick="checkAnswer(${i})">${opt}</button>`).join("")}
+        ${optionsHtml}
       </div>
-    </div>`;
+    </div>
+  `;
 }
 
 // 回答チェック
