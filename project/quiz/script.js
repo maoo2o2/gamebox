@@ -115,7 +115,7 @@ function showQuestion(){
       ${imgHtml}
       <p>${q.question}</p>
       <div class="options">
-        ${q.options.map((opt,i)=>\`<button onclick="checkAnswer(\${i})">\${opt}</button>\`).join("")}
+    ${q.options.map((opt,i)=><button onclick="checkAnswer(${i})">${opt}</button>).join("")}
       </div>
     </div>`;
 }
