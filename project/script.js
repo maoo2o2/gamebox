@@ -1,17 +1,17 @@
 // quiz/script.js
 
-// データ・ステート
+// ── データとステート ──
 let quizData = [];
 let currentQuestion = 0;
 let score = 0;
 let mistakes = [];
 
-// サウンド設定
+// ── サウンド設定 ──
 const correctSound = new Audio('quiz/sound/Quiz-Correct_Answer01-1.mp3');
 const wrongSound   = new Audio('quiz/sound/Quiz-Wrong_Buzzer02-1.mp3');
 const resultSound  = new Audio('quiz/sound/Quiz-Results01-1.mp3');
 
-// 科目別単元リスト
+// ── 科目別単元リスト ──
 const topicsBySubject = {
   "理科": [
     "1回　磁石","2回　昆虫","3回　流れる水のはたらき","4回　季節と天気",
@@ -30,38 +30,76 @@ const topicsBySubject = {
   ]
 };
 
-// DOM要素取得
-const topicSelector   = document.getElementById("topicSelector");
-const startBtn        = document.getElementById("startBtn");
-const quizArea        = document.getElementById("quizArea");
-const quizContainer   = document.getElementById("quiz");
-const resultContainer = document.getElementById("result");
-const scoreDisplay    = document.getElementById("score");
+// ── DOM要素取得 ──
+const topicSelector     = document.getElementById("topicSelector");
+const startBtn          = document.getElementById("startBtn");
+const quizArea          = document.getElementById("quizArea");
+const quizContainer     = document.getElementById("quiz");
+const resultContainer   = document.getElementById("result");
+const scoreDisplay      = document.getElementById("score");
 const mistakesContainer = document.getElementById("mistakes");
 
-// ページ上段で科目をセット （social.htmlでは先に定義）
+// ── 科目設定（social.htmlでは先に定義） ──
 const SUBJECT = typeof QUIZ_SUBJECT !== 'undefined' ? QUIZ_SUBJECT : '理科';
 
-// 単元セレクトを描画 with debug log
+// ── セレクター初期化 ──
 function populateTopicSelector() {
   console.log("populateTopicSelector called. SUBJECT=", SUBJECT);
-  topicSelector.innerHTML = "<option value=''>-- 単元を選んでね --</option>";
+  topicSelector.innerHTML = '<option value="">-- 単元を選んでね --</option>';
   const list = topicsBySubject[SUBJECT] || [];
   list.forEach(topic => {
     const option = document.createElement("option");
     option.value = topic;
     option.textContent = topic;
+    // CSV HEADチェック
     const csvPath = `quiz/quizzes/${SUBJECT}/${topic}.csv`;
     fetch(csvPath, { method: 'HEAD' })
-      .then(res => { if (!res.ok) option.textContent += " (未設定)"; })
-      .catch(() => { option.textContent += " (未設定)"; });
+      .then(res => { if (!res.ok) option.textContent += ' (未設定)'; })
+      .catch(() => { option.textContent += ' (未設定)'; });
     topicSelector.appendChild(option);
   });
 }
 
+topicSelector.addEventListener("change", () => {
+  const sel = topicSelector.options[topicSelector.selectedIndex];
+  startBtn.disabled = (sel.value === "" || sel.textContent.includes("未設定"));
+});
+
+// ── クイズ開始 ──
+function loadSelectedQuiz() {
+  const topic = topicSelector.value;
+  const path  = `quiz/quizzes/${SUBJECT}/${topic}.csv`;
+  fetch(path)
+    .then(res => { if (!res.ok) throw new Error(path); return res.text(); })
+    .then(csv => {
+      quizData = parseCSV(csv);
+      startBtn.disabled = true;
+      quizArea.classList.remove("hidden");
+      resultContainer.classList.add("hidden");
+      currentQuestion = 0;
+      score = 0;
+      mistakes = [];
+      showQuestion();
+    })
+    .catch(err => alert("読み込みエラー：" + err));
+}
+
+// ── CSVパース ──
+function parseCSV(csv) {
+  const lines   = csv.trim().split("\n");
+  const headers = lines[0].split(",");
+  const hasImage= headers[1] === "image";
+  const result  = [];
+  for (let i = 1; i < lines.length; i++) {
+    const vals = lines[i]
+      .match(/("([^"]*)"|[^,]+)(?=,|$)/g)
+      .map(v => v.replace(/^"|"$/g, ""));
+    if ((hasImage && vals.length >= 8) || (!hasImage && vals.length >= 7)) {
+      let idx = 0;
+      const q = { question: vals[idx++] };
       if (hasImage) q.image = vals[idx++];
-      q.options = [vals[idx++], vals[idx++], vals[idx++], vals[idx++]];
-      q.answer = parseInt(vals[idx++], 10);
+      q.options     = [vals[idx++], vals[idx++], vals[idx++], vals[idx++]];
+      q.answer      = parseInt(vals[idx++], 10);
       q.explanation = vals[idx++];
       result.push(q);
     }
@@ -69,7 +107,7 @@ function populateTopicSelector() {
   return result;
 }
 
-// コンフェッティ演出
+// ── コンフェッティ演出 ──
 function showConfetti() {
   const confetti = document.createElement('div');
   confetti.className = 'confetti';
@@ -84,36 +122,43 @@ function showConfetti() {
   setTimeout(() => confetti.remove(), 1500);
 }
 
-// 問題表示
+// ── 問題表示 ──
 function showQuestion() {
   const q = quizData[currentQuestion];
   const imgHtml = q.image
     ? `<img src="quiz/quizzes/${SUBJECT}/images/${q.image}" alt="問題画像" class="question-image">`
     : "";
+  const optionsHtml = q.options
+    .map((opt, i) => `<button onclick="checkAnswer(${i})">${opt}</button>`)
+    .join("");
   quizContainer.innerHTML = `
     <div class="question">
-      <h2>問題 ${currentQuestion+1}</h2>
+      <h2>問題 ${currentQuestion + 1}</h2>
       ${imgHtml}
       <p>${q.question}</p>
       <div class="options">
-        ${q.options.map((opt, i) => `<button onclick="checkAnswer(${i})">${opt}</button>`).join("")}
+        ${optionsHtml}
       </div>
-    </div>`;
+    </div>
+  `;
 }
 
-// 回答チェック
+// ── 回答チェック ──
 function checkAnswer(selected) {
-  const q = quizData[currentQuestion];
+  const q    = quizData[currentQuestion];
   const btns = document.querySelectorAll('.options button');
   btns.forEach((b, i) => {
     b.disabled = true;
-    if (i === q.answer) b.classList.add('correct');
+    if (i === q.answer)              b.classList.add('correct');
     if (i === selected && i !== q.answer) b.classList.add('wrong');
   });
   if (selected === q.answer) {
-    correctSound.play(); score++; showConfetti();
+    correctSound.play();
+    score++;
+    showConfetti();
   } else {
-    wrongSound.play(); mistakes.push({ q: q.question, correct: q.options[q.answer], explanation: q.explanation });
+    wrongSound.play();
+    mistakes.push({ q: q.question, correct: q.options[q.answer], explanation: q.explanation });
   }
   setTimeout(() => {
     currentQuestion++;
@@ -122,7 +167,7 @@ function checkAnswer(selected) {
   }, 1500);
 }
 
-// 結果表示
+// ── 結果表示 ──
 function showResult() {
   resultSound.play();
   quizContainer.classList.add('hidden');
@@ -130,21 +175,25 @@ function showResult() {
   scoreDisplay.textContent = `あなたの得点は ${score} / ${quizData.length} 点！`;
   if (mistakes.length) {
     mistakesContainer.innerHTML = '<h3>間違えた問題：</h3>' +
-      mistakes.map(m => `<p><strong>Q:</strong> ${m.q}<br>` +
-                       `<strong>正解:</strong> ${m.correct}<br><em>${m.explanation}</em></p>`).join('');
+      mistakes
+        .map(m => `<p><strong>Q:</strong> ${m.q}<br>` +
+                  `<strong>正解:</strong> ${m.correct}<br><em>${m.explanation}</em></p>`)
+        .join('');
   } else {
     mistakesContainer.innerHTML = '<p>全問正解！すばらしい！</p>';
   }
 }
 
-// リトライ
+// ── リトライ ──
 function restartQuiz() {
-  currentQuestion = 0; score = 0; mistakes = [];
+  currentQuestion = 0;
+  score = 0;
+  mistakes = [];
   resultContainer.classList.add('hidden');
   quizContainer.classList.remove('hidden');
   showQuestion();
 }
 
-// 初期化
-document.addEventListener('DOMContentLoaded', populateTopicSelector);
+// ── 初期化 ──
+window.addEventListener('load', populateTopicSelector);
 
