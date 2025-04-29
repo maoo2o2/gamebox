@@ -42,15 +42,15 @@ const mistakesContainer = document.getElementById("mistakes");
 // ページ上段で科目をセット （social.htmlでは先に定義）
 const SUBJECT = typeof QUIZ_SUBJECT !== 'undefined' ? QUIZ_SUBJECT : '理科';
 
-// 単元セレクトを描画
+// 単元セレクトを描画 with debug log
 function populateTopicSelector() {
+  console.log("populateTopicSelector called. SUBJECT=", SUBJECT);
   topicSelector.innerHTML = "<option value=''>-- 単元を選んでね --</option>";
   const list = topicsBySubject[SUBJECT] || [];
   list.forEach(topic => {
     const option = document.createElement("option");
     option.value = topic;
     option.textContent = topic;
-    // CSV HEADチェック
     const csvPath = `quiz/quizzes/${SUBJECT}/${topic}.csv`;
     fetch(csvPath, { method: 'HEAD' })
       .then(res => { if (!res.ok) option.textContent += " (未設定)"; })
@@ -59,46 +59,6 @@ function populateTopicSelector() {
   });
 }
 
-// 単元選択でボタン活性化
-topicSelector.addEventListener("change", () => {
-  const sel = topicSelector.options[topicSelector.selectedIndex];
-  startBtn.disabled = (sel.value === "" || sel.textContent.includes("未設定"));
-});
-
-// クイズ開始
-function loadSelectedQuiz() {
-  const topic = topicSelector.value;
-  const path  = `quiz/quizzes/${SUBJECT}/${topic}.csv`;
-  fetch(path)
-    .then(res => {
-      if (!res.ok) throw new Error(path);
-      return res.text();
-    })
-    .then(csv => {
-      quizData = parseCSV(csv);
-      startBtn.disabled = true;
-      quizArea.classList.remove("hidden");
-      resultContainer.classList.add("hidden");
-      currentQuestion = 0;
-      score = 0;
-      mistakes = [];
-      showQuestion();
-    })
-    .catch(err => alert("読み込みエラー：" + err));
-}
-
-// CSVを配列に変換
-function parseCSV(csv) {
-  const lines = csv.trim().split("\n");
-  const headers = lines[0].split(",");
-  const hasImage = headers[1] === "image";
-  const result = [];
-  for (let i = 1; i < lines.length; i++) {
-    const vals = lines[i].match(/("([^"]*)"|[^,]+)(?=,|$)/g)
-                      .map(v => v.replace(/^"|"$/g, ""));
-    if ((hasImage && vals.length >= 8) || (!hasImage && vals.length >= 7)) {
-      let idx = 0;
-      const q = { question: vals[idx++] };
       if (hasImage) q.image = vals[idx++];
       q.options = [vals[idx++], vals[idx++], vals[idx++], vals[idx++]];
       q.answer = parseInt(vals[idx++], 10);
@@ -127,27 +87,18 @@ function showConfetti() {
 // 問題表示
 function showQuestion() {
   const q = quizData[currentQuestion];
-  // 画像があれば表示、なければ空文字
   const imgHtml = q.image
     ? `<img src="quiz/quizzes/${SUBJECT}/images/${q.image}" alt="問題画像" class="question-image">`
-    : '';
-
-  // 選択肢ボタンのHTMLをあらかじめ生成
-  const optionsHtml = q.options
-    .map((opt, i) => `<button onclick="checkAnswer(${i})">${opt}</button>`)
-    .join('');
-
-  // テンプレートリテラルで組み立て
+    : "";
   quizContainer.innerHTML = `
     <div class="question">
-      <h2>問題 ${currentQuestion + 1}</h2>
+      <h2>問題 ${currentQuestion+1}</h2>
       ${imgHtml}
       <p>${q.question}</p>
       <div class="options">
-        ${optionsHtml}
+        ${q.options.map((opt, i) => `<button onclick="checkAnswer(${i})">${opt}</button>`).join("")}
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
 // 回答チェック
