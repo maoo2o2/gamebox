@@ -74,7 +74,7 @@ topicSelector.addEventListener("change", () => {
 // クイズ開始
 function loadSelectedQuiz() {
   const topic = topicSelector.value;
-  const path  = `quiz/quizzes/${SUBJECT}/${topic}.csv`;
+  const path  = `/quizzes/${SUBJECT}/${topic}.csv`;
   fetch(path)
     .then(res => { if (!res.ok) throw new Error(path); return res.text(); })
     .then(csv => {
@@ -127,7 +127,7 @@ function showConfetti() {
 // 問題表示
 function showQuestion() {
   const q = quizData[currentQuestion];
-  let imgHtml = q.image ? `<img src="quiz/quizzes/${SUBJECT}/images/${q.image}" alt="問題画像" class="question-image">` : "";
+  let imgHtml = q.image ? `<img src="/quizzes/${SUBJECT}/images/${q.image}" alt="問題画像" class="question-image">` : "";
   quizContainer.innerHTML = `
     <div class="question">
       <h2>問題 ${currentQuestion + 1}</h2>
