@@ -116,7 +116,7 @@ function parseCSV(csv) {
   }
 
   return result;
-
+}
 
 // ── コンフェッティ演出 ──
 function showConfetti() {
