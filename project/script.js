@@ -89,38 +89,33 @@ function parseCSV(csv) {
   const lines = csv.trim().split("\n");
   const headers = lines[0].split(",").map(h => h.trim());
   const hasImage = headers.includes("image");
+  const answerKey = headers.includes("answerIndex") ? "answerIndex" : "answer";
   const result = [];
 
   for (let i = 1; i < lines.length; i++) {
-    const raw = lines[i];
-    const vals = raw.match(/("([^"]*)"|[^,]+)(?=,|$)/g)?.map(v => v.replace(/^"|"$/g, "")) || [];
+    const vals = lines[i]
+      .match(/("([^"]*)"|[^,]+)(?=,|$)/g)
+      ?.map(v => v.replace(/^"|"$/g, "")) || [];
 
     let idx = 0;
     const q = { question: vals[idx++] || "" };
 
     if (hasImage) {
-      q.image = vals[idx++] || null; // 空欄の場合はnull
+      q.image = vals[idx++] || null;
     }
 
-    // 選択肢は常に4つ想定
     q.options = [vals[idx++], vals[idx++], vals[idx++], vals[idx++]];
-
-    // 回答は必須
     q.answer = parseInt(vals[idx++], 10);
-
-    // 解説は省略可
     q.explanation = vals[idx++] || "";
 
-    // 選択肢と回答の妥当性チェック
     if (q.options.length === 4 && !isNaN(q.answer)) {
       result.push(q);
     } else {
-      console.warn(`問題スキップ（列数不足など）: 行${i + 1}`, q);
+      console.warn(`スキップ: 行${i + 1}`, q);
     }
   }
 
   return result;
-}
 
 
 // ── コンフェッティ演出 ──
