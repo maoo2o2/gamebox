@@ -82,5 +82,33 @@ function loadSelectedQuiz() {
     .catch(err => alert("読み込みエラー：" + err));
 }
 
-// （この後の関数：showQuestion, checkAnswer などは Canvas 上で表示済みのため省略）
+// ── CSVパース（改良版：空白や不足値に強い） ──
+function parseCSV(csv) {
+  const lines = csv.trim().split("\n");
+  const headers = lines[0].split(",").map(h => h.trim());
+  const hasImage = headers.includes("image");
+  const result = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const vals = lines[i].split(",").map(v => v.trim().replace(/^"|"$/g, ""));
+    let idx = 0;
+    const q = { question: vals[idx++] || "" };
+    if (hasImage) q.image = vals[idx++] || null;
+    const options = [];
+    for (let j = 0; j < 4; j++) {
+      options.push(vals[idx++] || "（未設定）");
+    }
+    const answer = parseInt(vals[idx++] || "-1", 10);
+    const explanation = vals[idx++] || "";
+    if (options.length === 4 && !isNaN(answer)) {
+      q.options = options;
+      q.answer = answer;
+      q.explanation = explanation;
+      result.push(q);
+    } else {
+      console.warn(`スキップ: 行${i + 1}`, { options, answer, explanation, vals });
+    }
+  }
+  return result;
+}
 
