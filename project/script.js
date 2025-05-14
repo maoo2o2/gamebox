@@ -88,24 +88,34 @@ function loadSelectedQuiz() {
 function parseCSV(csv) {
   const lines   = csv.trim().split("\n");
   const headers = lines[0].split(",");
-  const hasImage= headers[1] === "image";
+  const hasImage = headers[1] === "image";
   const result  = [];
+
   for (let i = 1; i < lines.length; i++) {
     const vals = lines[i]
       .match(/("([^"]*)"|[^,]+)(?=,|$)/g)
-      .map(v => v.replace(/^"|"$/g, ""));
-    if ((hasImage && vals.length >= 8) || (!hasImage && vals.length >= 7)) {
-      let idx = 0;
-      const q = { question: vals[idx++] };
-      if (hasImage) q.image = vals[idx++];
-      q.options     = [vals[idx++], vals[idx++], vals[idx++], vals[idx++]];
-      q.answer      = parseInt(vals[idx++], 10);
-      q.explanation = vals[idx++];
+      ?.map(v => v.replace(/^"|"$/g, "")) || [];
+
+    let idx = 0;
+    const q = { question: vals[idx++] || "" };
+
+    if (hasImage) {
+      q.image = vals[idx++] || null; // 画像が空ならnull
+    }
+
+    q.options = [vals[idx++], vals[idx++], vals[idx++], vals[idx++]].filter(Boolean);
+    q.answer = parseInt(vals[idx++], 10);
+    q.explanation = vals[idx++] || "";
+
+    // 必要なデータがそろっていれば追加
+    if (q.options.length === 4 && !isNaN(q.answer)) {
       result.push(q);
     }
   }
+
   return result;
 }
+
 
 // ── コンフェッティ演出 ──
 function showConfetti() {
