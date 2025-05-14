@@ -82,7 +82,7 @@ function loadSelectedQuiz() {
     .catch(err => alert("読み込みエラー：" + err));
 }
 
-// ── CSVパース（改良版：空白や不足値に強い） ──
+// ── CSVパース（修正：オプションなし対策） ──
 function parseCSV(csv) {
   const lines = csv.trim().split("\n");
   const headers = lines[0].split(",").map(h => h.trim());
@@ -90,17 +90,16 @@ function parseCSV(csv) {
   const result = [];
 
   for (let i = 1; i < lines.length; i++) {
-    const vals = lines[i].split(",").map(v => v.trim().replace(/^"|"$/g, ""));
+    const raw = lines[i];
+    const vals = raw.match(/("[^"]*"|[^,]*)(?=,|$)/g)?.map(v => v.replace(/^"|"$/g, "").trim()) || [];
     let idx = 0;
     const q = { question: vals[idx++] || "" };
     if (hasImage) q.image = vals[idx++] || null;
-    const options = [];
-    for (let j = 0; j < 4; j++) {
-      options.push(vals[idx++] || "（未設定）");
-    }
+    const options = [vals[idx++], vals[idx++], vals[idx++], vals[idx++]];
     const answer = parseInt(vals[idx++] || "-1", 10);
     const explanation = vals[idx++] || "";
-    if (options.length === 4 && !isNaN(answer)) {
+
+    if (options.every(o => o !== undefined && o !== "") && !isNaN(answer)) {
       q.options = options;
       q.answer = answer;
       q.explanation = explanation;
@@ -111,4 +110,3 @@ function parseCSV(csv) {
   }
   return result;
 }
-
