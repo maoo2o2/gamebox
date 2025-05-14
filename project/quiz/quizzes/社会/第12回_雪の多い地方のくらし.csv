@@ -1,4 +1,4 @@
-question,image,option1,option2,option3,option4,answerIndex,explanation
+question,image,option1,option2,option3,option4,answer,explanation
 図のAの山脈の名前はどれですか？,so12.png,越後山脈,飛騨山脈,木曽山脈,赤石山脈,0,地図Aの位置は新潟県にあり、越後山脈が位置する地域です。
 日本で最も長い川の名前はどれですか？,,信濃川,利根川,天竜川,四万十川,0,信濃川は日本一長い川です。
 日本で最も長い川の長さとして正しいものを選びなさい。,so12.png,167km,267km,367km,467km,3,日本最長の川である信濃川の長さは約367kmです。
