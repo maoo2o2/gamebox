@@ -62,7 +62,7 @@ function populateTopicSelector() {
     option.textContent = topic;
 
     const csvPath = `quiz/quizzes/${SUBJECT}/${encodeURIComponent(topic)}_要点.csv`;
-    fetch(csvPath, { method: 'HEAD' })
+    fetch(csvPath, { method: 'GET' })
       .then(res => { if (!res.ok) option.textContent += ' (未設定)'; })
       .catch(() => { option.textContent += ' (未設定)'; });
 
@@ -91,7 +91,7 @@ topicSelector.addEventListener("change", () => {
   const types = ["要点", "練習", "演習"];
   types.forEach(type => {
     const path = `quiz/quizzes/${SUBJECT}/${encodeURIComponent(sel.value)}_${type}.csv`;
-    fetch(path, { method: 'HEAD' })
+    fetch(path, { method: 'GET' })
       .then(res => {
         if (res.ok) {
           const opt = Array.from(typeSelector.options).find(o => o.value === type);
