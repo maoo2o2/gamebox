@@ -31,7 +31,7 @@ const topicsBySubject = {
 };
 
 // ── DOM要素取得 ──
-cotopicSelector.addEventListener("change", () => {
+　topicSelector.addEventListener("change", () => {
   const sel = topicSelector.options[topicSelector.selectedIndex];
   const isValidTopic = sel.value !== "" && !sel.textContent.includes("未設定");
 
