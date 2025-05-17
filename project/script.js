@@ -31,15 +31,40 @@ const topicsBySubject = {
 };
 
 // ── DOM要素取得 ──
-const topicSelector = document.getElementById("topicSelector");
-const typeSelector = document.getElementById("typeSelector");
-const startBtn = document.getElementById("startBtn");
-const backBtn = document.getElementById("backBtn");
-const quizArea = document.getElementById("quizArea");
-const quizContainer = document.getElementById("quiz");
-const resultContainer = document.getElementById("result");
-const scoreDisplay = document.getElementById("score");
-const mistakesContainer = document.getElementById("mistakes");
+cotopicSelector.addEventListener("change", () => {
+  const sel = topicSelector.options[topicSelector.selectedIndex];
+  const isValidTopic = sel.value !== "" && !sel.textContent.includes("未設定");
+
+  if (!isValidTopic) {
+    typeSelector.disabled = true;
+    startBtn.disabled = true;
+    return;
+  }
+
+  // 「種類」セレクターをリセット
+  Array.from(typeSelector.options).forEach(opt => {
+    if (opt.value === "") return;
+    opt.disabled = true; // 一旦全部無効に
+  });
+
+  // 要点・練習・演習 のファイル存在チェック
+  const types = ["要点", "練習", "演習"];
+  types.forEach(type => {
+    const path = `quiz/quizzes/${SUBJECT}/${sel.value}_${type}.csv`;
+    fetch(path, { method: 'HEAD' })
+      .then(res => {
+        if (res.ok) {
+          const opt = Array.from(typeSelector.options).find(o => o.value === type);
+          if (opt) opt.disabled = false;
+        }
+      })
+      .catch(() => {});
+  });
+
+  typeSelector.disabled = false;
+  startBtn.disabled = true;
+});
+
 
 // ── 科目設定 ──
 const SUBJECT = typeof QUIZ_SUBJECT !== 'undefined' ? QUIZ_SUBJECT : '理科';
