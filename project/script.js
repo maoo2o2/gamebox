@@ -11,16 +11,16 @@ const resultSound  = new Audio('quiz/sound/Quiz-Results01-1.mp3');
 
 // ── 科目別単元リスト ──
 const topicsBySubject = {
-	"理科": [
-	"テスト復習",
+  "理科": [
+    "テスト復習",
     "1回　磁石","2回　昆虫","3回　流れる水のはたらき","4回　季節と天気",
     "5回　総合（第1回～第4回の復習）","6回　春の生物","7回　太陽","8回　水のすがた",
     "9回　光","10回　総合（第6回～第9回の復習）","11回　植物の成長","12回　植物のつくりとはたらき",
     "13回　身のまわりの空気と水","14回　金属","15回　総合（第11回～第14回の復習）",
     "16回　夏の生物","17回　星座をつくる星","18回　星座の動き","19回　動物","20回　総合（第16回～第19回の復習）"
   ],
-	"社会": [
-	"テスト復習",
+  "社会": [
+    "テスト復習",
     "第1回_健康で住みよいくらし","第2回_ものを売る仕事","第3回_昔のくらしと今のくらし",
     "第4回_都道府県と地方（1)","第6回_都道府県と地方（2)","第7回_地図の見方（1)",
     "第8回_地図の見方（2)","第9回_一年中あたたかい地方のくらし","第11回_寒さのきびしい地方のくらし",
@@ -31,40 +31,15 @@ const topicsBySubject = {
 };
 
 // ── DOM要素取得 ──
-　topicSelector.addEventListener("change", () => {
-  const sel = topicSelector.options[topicSelector.selectedIndex];
-  const isValidTopic = sel.value !== "" && !sel.textContent.includes("未設定");
-
-  if (!isValidTopic) {
-    typeSelector.disabled = true;
-    startBtn.disabled = true;
-    return;
-  }
-
-  // 「種類」セレクターをリセット
-  Array.from(typeSelector.options).forEach(opt => {
-    if (opt.value === "") return;
-    opt.disabled = true; // 一旦全部無効に
-  });
-
-  // 要点・練習・演習 のファイル存在チェック
-  const types = ["要点", "練習", "演習"];
-  types.forEach(type => {
-    const path = `quiz/quizzes/${SUBJECT}/${sel.value}_${type}.csv`;
-    fetch(path, { method: 'HEAD' })
-      .then(res => {
-        if (res.ok) {
-          const opt = Array.from(typeSelector.options).find(o => o.value === type);
-          if (opt) opt.disabled = false;
-        }
-      })
-      .catch(() => {});
-  });
-
-  typeSelector.disabled = false;
-  startBtn.disabled = true;
-});
-
+const topicSelector = document.getElementById("topicSelector");
+const typeSelector = document.getElementById("typeSelector");
+const startBtn = document.getElementById("startBtn");
+const backBtn = document.getElementById("backBtn");
+const quizArea = document.getElementById("quizArea");
+const quizContainer = document.getElementById("quiz");
+const resultContainer = document.getElementById("result");  // ← ここ追加
+const scoreDisplay = document.getElementById("score");
+const mistakesContainer = document.getElementById("mistakes");
 
 // ── 科目設定 ──
 const SUBJECT = typeof QUIZ_SUBJECT !== 'undefined' ? QUIZ_SUBJECT : '理科';
@@ -86,8 +61,7 @@ function populateTopicSelector() {
     option.value = topic;
     option.textContent = topic;
 
-    // 「要点」ファイルが無ければ (未設定) を付ける
-    const csvPath = `quiz/quizzes/${SUBJECT}/${topic}_要点.csv`;
+    const csvPath = `quiz/quizzes/${SUBJECT}/${encodeURIComponent(topic)}_要点.csv`;
     fetch(csvPath, { method: 'HEAD' })
       .then(res => { if (!res.ok) option.textContent += ' (未設定)'; })
       .catch(() => { option.textContent += ' (未設定)'; });
@@ -96,14 +70,42 @@ function populateTopicSelector() {
   });
 }
 
-// ── セレクター変更時の制御 ──
+// ── 単元選択時の種類チェック ──
 topicSelector.addEventListener("change", () => {
   const sel = topicSelector.options[topicSelector.selectedIndex];
-  const isValid = sel.value !== "" && !sel.textContent.includes("未設定");
-  typeSelector.disabled = !isValid;
+  const isValidTopic = sel.value !== "" && !sel.textContent.includes("未設定");
+
+  if (!isValidTopic) {
+    typeSelector.disabled = true;
+    startBtn.disabled = true;
+    return;
+  }
+
+  // 種類セレクターを一旦全部無効化
+  Array.from(typeSelector.options).forEach(opt => {
+    if (opt.value === "") return;
+    opt.disabled = true;
+  });
+
+  // 要点・練習・演習のファイル存在チェック
+  const types = ["要点", "練習", "演習"];
+  types.forEach(type => {
+    const path = `quiz/quizzes/${SUBJECT}/${encodeURIComponent(sel.value)}_${type}.csv`;
+    fetch(path, { method: 'HEAD' })
+      .then(res => {
+        if (res.ok) {
+          const opt = Array.from(typeSelector.options).find(o => o.value === type);
+          if (opt) opt.disabled = false;
+        }
+      })
+      .catch(() => {});
+  });
+
+  typeSelector.disabled = false;
   startBtn.disabled = true;
 });
 
+// ── 種類選択時のスタートボタン制御 ──
 typeSelector.addEventListener("change", () => {
   startBtn.disabled = typeSelector.value === "";
 });
@@ -112,7 +114,7 @@ typeSelector.addEventListener("change", () => {
 function loadSelectedQuiz() {
   const topic = topicSelector.value;
   const type = typeSelector.value;
-  const path = `quiz/quizzes/${SUBJECT}/${topic}_${type}.csv`;
+  const path = `quiz/quizzes/${SUBJECT}/${encodeURIComponent(topic)}_${type}.csv`;
 
   fetch(path)
     .then(res => { if (!res.ok) throw new Error(path); return res.text(); })
@@ -206,7 +208,7 @@ function showResult() {
   scoreDisplay.textContent = `あなたの得点は ${score} / ${quizData.length} 点！`;
   mistakesContainer.innerHTML = mistakes.length
     ? '<h3>間違えた問題：</h3>' + mistakes.map(m => `<p><strong>Q:</strong> ${m.q}<br><strong>正解:</strong> ${m.correct}<br><em>${m.explanation}</em></p>`).join('')
-    : '<p>全問正解！すばらしい！</p>';
+    : '<p>全問正解！すばらしい！やったー航志くんすごい！！</p>';
 }
 
 // ── リトライ ──
