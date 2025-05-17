@@ -1,6 +1,3 @@
-@ -1,200 +1,210 @@
-// quiz/script.js
-
 // ── データとステート ──
 let quizData = [];
 let currentQuestion = 0;
