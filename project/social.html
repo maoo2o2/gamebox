@@ -11,6 +11,13 @@
     <h1>社会クイズ</h1>
     <label for="topicSelector">単元を選んでね：</label>
     <select id="topicSelector"></select>
+       <label for="typeSelector">問題の種類を選んでね：</label>
+    <select id="typeSelector" disabled>
+      <option value="">-- 種類を選んでね --</option>
+      <option value="要点">要点</option>
+      <option value="練習">練習</option>
+      <option value="演習">演習</option>
+    </select>
     <button id="startBtn" onclick="loadSelectedQuiz()" disabled>クイズスタート！</button>
     <div id="quizArea" class="hidden">
       <div id="quiz"></div>
