@@ -37,7 +37,7 @@ const startBtn = document.getElementById("startBtn");
 const backBtn = document.getElementById("backBtn");
 const quizArea = document.getElementById("quizArea");
 const quizContainer = document.getElementById("quiz");
-const resultContainer = document.getElementById("result");  // ← ここ追加
+const resultContainer = document.getElementById("result");
 const scoreDisplay = document.getElementById("score");
 const mistakesContainer = document.getElementById("mistakes");
 
@@ -48,13 +48,13 @@ const SUBJECT = typeof QUIZ_SUBJECT !== 'undefined' ? QUIZ_SUBJECT : '理科';
 function populateTopicSelector() {
   topicSelector.innerHTML = '<option value="">-- 単元を選んでね --</option>';
 
-  // 先頭にカリテを追加
+  // カリテを追加
   const kariteOption = document.createElement("option");
   kariteOption.value = "カリテ";
   kariteOption.textContent = "カリテ";
   topicSelector.appendChild(kariteOption);
 
-  // 既存単元を追加しつつ「要点」CSVがなければ(未設定)
+  // 既存単元
   const list = topicsBySubject[SUBJECT] || [];
   list.forEach(topic => {
     const option = document.createElement("option");
@@ -70,24 +70,29 @@ function populateTopicSelector() {
   });
 }
 
-// ── 単元選択時の種類チェック ──
+// ── 単元選択時の処理 ──
 topicSelector.addEventListener("change", () => {
   const sel = topicSelector.options[topicSelector.selectedIndex];
-  const isValidTopic = sel.value !== "" && !sel.textContent.includes("未設定");
+  const isKarite = sel.value === "カリテ";
 
+  if (isKarite) {
+    typeSelector.disabled = true;
+    startBtn.disabled = false;
+    return;
+  }
+
+  const isValidTopic = sel.value !== "" && !sel.textContent.includes("未設定");
   if (!isValidTopic) {
     typeSelector.disabled = true;
     startBtn.disabled = true;
     return;
   }
 
-  // 種類セレクターを一旦全部無効化
   Array.from(typeSelector.options).forEach(opt => {
     if (opt.value === "") return;
     opt.disabled = true;
   });
 
-  // 要点・練習・演習のファイル存在チェック
   const types = ["要点", "練習", "演習"];
   types.forEach(type => {
     const path = `quiz/quizzes/${SUBJECT}/${encodeURIComponent(sel.value)}_${type}.csv`;
@@ -105,7 +110,7 @@ topicSelector.addEventListener("change", () => {
   startBtn.disabled = true;
 });
 
-// ── 種類選択時のスタートボタン制御 ──
+// ── 種類選択時 ──
 typeSelector.addEventListener("change", () => {
   startBtn.disabled = typeSelector.value === "";
 });
@@ -114,7 +119,10 @@ typeSelector.addEventListener("change", () => {
 function loadSelectedQuiz() {
   const topic = topicSelector.value;
   const type = typeSelector.value;
-  const path = `quiz/quizzes/${SUBJECT}/${encodeURIComponent(topic)}_${type}.csv`;
+
+  const path = topic === "カリテ"
+    ? `quiz/quizzes/${SUBJECT}/カリテ.csv`
+    : `quiz/quizzes/${SUBJECT}/${encodeURIComponent(topic)}_${type}.csv`;
 
   fetch(path)
     .then(res => { if (!res.ok) throw new Error(path); return res.text(); })
@@ -216,8 +224,8 @@ function restartQuiz() {
   currentQuestion = 0;
   score = 0;
   mistakes = [];
-  resultContainer.classList.add('hidden');
-  quizContainer.classList.remove('hidden');
+  resultContainer.classList.add("hidden");
+  quizContainer.classList.remove("hidden");
   showQuestion();
 }
 
